@@ -11,7 +11,7 @@ Guida avanzata di scripting Bash -> http://www.pluto.it/files/ildp/guide/abs/ind
 > man passwd # permette di cambiare la password utente
 > history # storia di tutti i comandi 
 > !{numero riga} # riesegue comando a quella riga della history
-
-
+> rm # elimina file
+> cd /area_comune/docenti/bertini_so # connessione area comune
 
 
