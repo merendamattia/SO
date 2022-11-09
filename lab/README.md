@@ -1,5 +1,5 @@
 # Comandi
-Guida avanzata di scripting Bash # http://www.pluto.it/files/ildp/guide/abs/index.html
+Guida avanzata di scripting Bash: http://www.pluto.it/files/ildp/guide/abs/index.html
 
 ```
 > clear # pulizia interfaccia
