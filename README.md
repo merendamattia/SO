@@ -5,4 +5,5 @@ Guida directory:
 - [/lab/connessione_shell](https://github.com/merendamattia/SO/tree/main/lab/connessione_shell): come collegarsi al server unipr
 - [/lab/lezioni](https://github.com/merendamattia/SO/tree/main/lab/lezioni/): materiale visto nelle lezioni
 
-> Appunti teoria: [merendamattia.com/uni](https://www.merendamattia.com/uni.html)
+> Appunti teoria: [merendamattia.com/uni](https://www.merendamattia.com/uni.html)  
+[MacOs User]
