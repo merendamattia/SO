@@ -1,5 +1,6 @@
 Guida avanzata di scripting Bash # http://www.pluto.it/files/ildp/guide/abs/index.html
 
+```
 > clear # pulizia interfaccia
 > man {nome programma} # manuale shell
 > man -wa {comando} # trova dove sta il comando nel manuale
@@ -13,5 +14,5 @@ Guida avanzata di scripting Bash # http://www.pluto.it/files/ildp/guide/abs/inde
 > !{numero riga} # riesegue comando a quella riga della history
 > rm # elimina file
 > cd /area_comune/docenti/bertini_so # connessione area comune
-
+```
 
