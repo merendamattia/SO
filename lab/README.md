@@ -15,5 +15,7 @@ Guida avanzata di scripting Bash: http://www.pluto.it/files/ildp/guide/abs/index
 > !{numero riga} # riesegue comando a quella riga della history
 > rm # elimina file
 > cd /area_comune/docenti/bertini_so # connessione area comune
+> cp [source] [destination] # copia file e lo incolla nella nuova directory
+> cat [nome file] # apre il file 
 ```
 
