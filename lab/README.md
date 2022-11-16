@@ -1,5 +1,5 @@
 # Comandi
-Guida avanzata di [scripting Bash](http://www.pluto.it/files/ildp/guide/abs/index.html) (consigliata dal prof Bertini).
+Guida avanzata di [scripting Bash](http://www.pluto.it/files/ildp/guide/abs/index.html) (consigliata dal prof. Bertini).
 
 ## Lista di comandi visti a lezione
 | Command           | Description |
@@ -15,9 +15,23 @@ Guida avanzata di [scripting Bash](http://www.pluto.it/files/ildp/guide/abs/inde
 | history           | storia di tutti i comandi eseguiti |
 | ![numero riga]    | riesegue comando a quella riga della history |
 | rm [nome file]    | elimina file |
-| cd /area_comune/docenti/bertini_so | connessione area comune prof Bertini |
-| cp [source] [destination] | copia file e lo incolla nella nuova directory |
-| cat [nome file]   | apre il file  |
-| nano [nome file].[estensione] | crea file e apre editor di testo |
-| make [nome file] | compila file e crea file oggetto (testato con C e C++) |
-| ./[nome file oggetto] | esegue programma |
+| cd /area_comune/docenti/bertini_so 	| connessione area comune prof Bertini |
+| cp [dir source] [dir destination] 	| copia file e lo incolla nella nuova directory |
+| cat [nome file]   					| apre il file |
+| nano [nome file].[estensione] 		| crea file e apre editor di testo |
+| make [nome file] 						| compila file e crea file oggetto (testato con C e C++) |
+| ./[nome file oggetto] 				| esegue programma |
+| pushd [directory] 					| salva nello stack l'indirizzo della directory |
+| popd 									| estrae dallo stack l'indirizzo della directory |
+| pwd 									| ritorna il percorso della directory in cui ci troviamo |
+| rm -rf [directory] 					| rimozione forzata di una cartella |
+| touch [nome file].[estensione] 		| crea file vuoto |
+| ln -s [nome file] [nome link] 		| creo link simbolico (soft link) (collegamento) |
+| ls -li 								| visualizzazione dettagliata con high number |
+| ln [nome file] [nome link]			| duplicazione file (se ne modifico uno si modifica anche l'altro) (copia che si aggiorna) (hard link) (li puoi creare solo sullo stesso file system) |
+| chmod 666 [nome file] 				| cambio permessi a un file (666: do' a tutti pemesso di scrittura) |
+| chmod u=wx, g=x, o=w [nome file] 		| user: write/exec, group: exec, other: write (maggiori informazioni slide 26 di 'Lab_Lezione_1.pdf') |
+| chown [nome utente destinatario] [nome file] | cambio proprietà file |
+|  |  |
+|  |  |
+|  |  |
