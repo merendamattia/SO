@@ -32,6 +32,6 @@ Guida avanzata di [scripting Bash](http://www.pluto.it/files/ildp/guide/abs/inde
 | chmod 666 [nome file] 				| cambio permessi a un file (666: do' a tutti pemesso di scrittura) |
 | chmod u=wx, g=x, o=w [nome file] 		| user: write/exec, group: exec, other: write (maggiori informazioni slide 26 di 'Lab_Lezione_1.pdf') |
 | chown [nome utente destinatario] [nome file] | cambio proprietà file |
-|  |  |
+| scp [file locale] [email ateneo]@didattica-linux.unipr.it:[dir remota] | Copia un file da macchina locale a macchina remota unipr |
 |  |  |
 |  |  |
