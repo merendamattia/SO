@@ -5,3 +5,9 @@
 ssh cognome.nome@studenti.unipr.it@didattica-linux.unipr.it
 ```
 3. Inserire la password della propria email di ateneo
+
+
+### Scrittura su macchina remota UNIPR
+```
+scp prova.txt saveriomattia.merenda@studenti.unipr.it@didattica-linux.unipr.it:/home/s.merenda1/Scrivania
+```
