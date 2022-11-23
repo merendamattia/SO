@@ -1,5 +1,5 @@
 # Guide connessioni varie
-## Connessione shell da MacOs 
+## Connessione shell da UNIX 
 1. Accedere alla VPN UniPR con FORTICLIENT ([guida installazione VPN](https://www.biblioteche.unipr.it/it/node/2366))
 2. Aprire il Terminale e digitare la seguente riga di codice
 ```
