@@ -12,14 +12,14 @@ Indice
 3. Sincronizzazione Posix
     - Lock mutex Posix
     - Semafori Posix
-        - Semafori named
-        - Semafori unnamed
+        - Semafori Posix named
+        - Semafori Posix unnamed
     - Variabili condizionali Posix
     
-##  Classici problemi di Sincronizzazione
+#  Classici problemi di Sincronizzazione
 Questi problemi sono utili per verificare quasi tutte le nuove proposte di schemi di sincronizzazione.
 
-### Produttore - consumatore con memoria limitata
+## Produttore - consumatore con memoria limitata
 Nel nostro problema produttore e consumatore condividono le seguenti strutture dati:
 
 ```c++
@@ -71,7 +71,7 @@ Il codice si può interpretare nel senso di produzione, da parte del produttore,
 da parte del consumatore, di posizioni vuote per il produttore.
 
 
-### Problema dei lettori - scrittori
+## Problema dei lettori - scrittori
 Si supponga che una base di dati sia da condividere tra numerosi processi concorrenti.  
 Alcuni processi possono richiedere solo la lettura del contenuto della base dati (lettori), mentre altri ne possono richiedere un aggiornamento, vale a dire una lettura e una scrittura (scrittori).  
 Se due lettori accedono nello stesso momento all’insieme di dati condiviso, non si ha alcun effetto negativo.  
@@ -141,12 +141,12 @@ I lock di lettura - scrittura sono utili soprattutto nelle situazioni seguenti:
 - Nelle applicazioni che prevedono più lettori che scrittori. Infatti, i lock di lettura- scrittura comportano in genere un carico di lavoro aggiuntivo rispetto ai semafori o ai lock mutex, compensato però dalla possibilità di eseguire molti lettori in concorrenza.
 
 
-### Problema dei cinque filosofi (dining philosophers)
+## Problema dei cinque filosofi (dining philosophers)
 Si considerino cinque filosofi che trascorrono la loro esistenza pensando e mangiando.  
 I filosofi condividono un tavolo rotondo circondato da cinque sedie, una per ciascun filosofo.  
 Al centro del tavolo si trova una zuppiera colma di riso, e la tavola è apparecchiata con cinque bacchette
 
-** FOTO TAVOLA ROTONDA **
+** FOTO 1 **
 
 Quando un filosofo pensa, non interagisce con i colleghi.  
 Quando gli viene fame, tenta di prendere le bacchette più vicine: quelle che si trovano tra lui e i commensali alla sua destra e alla sua sinistra.  
@@ -156,7 +156,7 @@ Terminato il pasto, le posa e riprende a pensare.
 
 Il problema dei cinque filosofi è considerato un classico problema di sincronizzazione, non certo per la sua importanza pratica, e neanche per antipatia verso i filosofi da parte degli informatici, ma perché rappresenta una vasta classe di problemi di controllo della concorrenza, in particolare i problemi caratterizzati dalla necessità di assegnare varie risorse a diversi processi evitando situazioni di stallo e d’attesa indefinita.
 
-#### Soluzione con uso di semafori
+### Soluzione con uso di semafori
 Una semplice soluzione consiste nel rappresentare ogni bacchetta con un semaforo: un filosofo tenta di afferrare ciascuna bacchetta eseguendo un’operazione `wait()` su quel semaforo e la posa eseguendo operazioni `signal()` sui semafori appropriati.  
 Quindi, i dati condivisi sono
 ```c++
@@ -190,7 +190,7 @@ Tali situazioni di stallo possono essere evitate con i seguenti espedienti:
 
 Si noti tuttavia che qualsiasi soluzione soddisfacente per il problema dei cinque filosofi deve escludere la possibilità di situazioni d’attesa indefinita, in altre parole che uno dei filosofi muoia di fame (da qui il termine starvation) – una soluzione immune alle situazioni di stallo non esclude necessariamente la possibilità di situazioni d’attesa indefinita.
 
-#### Soluzione con uso dei monitor
+### Soluzione con uso dei monitor
 La soluzione impone il vincolo che un filosofo possa prendere le sue bacchette solo quando siano entrambe disponibili.  
 Per codificare questa soluzione si devono distinguere i tre diversi stati in cui può trovarsi un filosofo.  
 A tale scopo si introduce la seguente struttura dati:
@@ -263,17 +263,175 @@ Occorre però notare che un filosofo può attendere indefinitamente.
 La soluzione di questo problema è lasciata come esercizio per il lettore.
 
 
-## Sincronizzazione all'interno del Kernel
+# Sincronizzazione all'interno del Kernel
+Questi due sistemi (Windows e Linux) offrono buoni esempi di approcci differenti rispetto alla sincronizzazione del kernel.
+
+## Sincronizzazione in Windows
+Il sistema operativo Windows ha un kernel multithread che offre anche il supporto alle applicazioni in tempo reale e alle architetture multiprocessore.  
+Quando il kernel di Windows accede a una risorsa globale in un sistema con monoprocessore, disabilita temporaneamente le interruzioni con interrupt handler che potrebbero accedere alla stessa risorsa globale.  
+In un sistema multiprocessore, Windows protegge l’accesso alle risorse globali con i semafori ad attesa attiva (spinlock), anche se il kernel usa i semafori ad attesa attiva solo per proteggere segmenti di codice brevi.  
+Inoltre il kernel impedisce che un thread sia sottoposto a prelazione mentre detiene uno spinlock.  
+  
+Per la sincronizzazione fuori dal kernel, Windows offre gli oggetti `dispatcher`, che permettono ai thread di sincronizzarsi servendosi di diversi meccanismi, inclusi lock mutex, semafori, eventi e timer.  
+I dati condivisi vengono protetti richiedendo che un thread entri in possesso di un mutex prima di potervi accedere, e rilasci il mutex al completamento dell’elaborazione di quei dati.
+  
+Gli eventi possono notificare il verificarsi di una determinata condizione a un thread che l’attendeva.  
+Infine i timer sono usati per informare un thread (o più di uno) della scadenza di uno specifico periodo di tempo.  
+Gli oggetti dispatcher possono essere nello stato signaled o nello stato nonsignaled.  
+Uno stato `signaled` indica che l’oggetto è disponibile e che un thread che tentasse di accedere all’oggetto non sarebbe bloccato.  
+Uno stato `nonsignaled` indica che l’oggetto non è disponibile e che qualsiasi thread che tentasse di accedervi sarebbe bloccato.
+
+** FOTO 2 **
+
+## Sincronizzazione dei processi in Linux
+Prima della versione 2.6, Linux adoperava un kernel senza prelazione; ciò significa che un processo in esecuzione in modalità kernel non poteva essere prelazionato – neppure nel caso in cui processi con priorità più alta fossero pronti per l’esecuzione.  
+Ora il kernel di Linux ha adottato compiutamente il procedimento della prelazione, cosicché i task attivi nel kernel possono essere sottoposti a prelazione.  
+Linux fornisce diversi meccanismi per la sincronizzazione nel kernel.  
+Dato che la maggior parte delle architetture fornisce istruzioni per le versioni atomiche di semplici operazioni matematiche, la tecnica di sincronizzazione più semplice nel kernel di Linux è l’intero atomico, rappresentato mediante il tipo di dato opaco `atomic_t`.  
+Tutte le operazioni matematiche che usano numeri interi atomici vengono eseguite senza interruzioni.  
+
+Si prenda in considerazione un programma composto da un intero atomico `counter` e da un intero `value`:
+
+```c++
+atomic_t counter; 
+int value;
+```
+
+Il seguente codice illustra l’effetto dell’esecuzione di alcune operazioni atomiche:
+```c++
+atomic_set(&counter,5); /* counter = 5 */ 
+atomic_add(10,&counter);/* counter = counter + 10 */ 
+atomic_sub(4,&counter);/* counter = counter - 4 */ 
+atomic_inc(&counter);/* counter = counter + 1 */ 
+value = atomic_read(&counter);/* value = 12 */
+```
+
+Gli interi atomici sono particolarmente efficienti in situazioni in cui deve essere aggiornata una variabile intera, per esempio un contatore, in quanto non risentono dell’overhead dei meccanismi di lock.  
+Il loro utilizzo è tuttavia limitato a questi tipi di scenario. In situazioni in cui vi sono diverse variabili che contribuiscono a una possibile race condition, devono essere utilizzati strumenti di lock più sofisticati.  
+
+In Linux sono disponibili i lock mutex, utili per proteggere le sezioni critiche all’interno del kernel. In caso di loro utilizzo, un task deve invocare la funzione `mutex_lock()` prima di entrare in una sezione critica e la funzione `mutex_unlock()` dopo l’uscita dalla sezione critica.  
+Se il lock mutex non è disponibile, il task che ha invocato la `mutex_lock()` viene sospeso; verrà risvegliato quando il proprietario del lock invoca `mutex_unlock()`.
 
 
+# Sincronizzazione Posix
+I metodi di sincronizzazione discussi precedentemente riguardano la sincronizzazione all’interno del kernel e sono quindi disponibili solo agli sviluppatori del kernel.  
+L’API Posix è invece a disposizione dei programmatori a livello utente e non fa parte di alcun particolare kernel.
 
+## Lock mutex Posix
+I lock mutex rappresentano la tecnica di sincronizzazione fondamentale in ambiente Pthreads.  
+La loro finalità è di proteggere le sezioni critiche del codice: un thread acquisisce un lock prima di entrare in una sezione critica.  
+Quindi, al momento di uscirne, lo rilascia.  
+Pthreads utilizza il tipo di dato `pthread_mutex_t` per i lock mutex.  
+Un mutex viene creato mediante la funzione `mutex_pthread_init()`.  
+Il primo parametro è un puntatore al mutex.  
+Passando NULL come secondo parametro si inizializza il mutex agli attributi predefiniti.
 
+```c++
+#include <pthread.h>
+pthread_mutex_t mutex;
+/* crea e inizializza il lock mutex */ 
+pthread_mutex_init(&mutex, NULL);
+```
 
+Il mutex viene acquisito e rilasciato con le funzioni `pthread_mutex_lock()` e `pthread_mutex_unlock()`.  
+Se il lock mutex non è disponibile quando viene invocata la `pthread_mutex_lock()`, il thread chiamante viene bloccato finché il proprietario richiama `pthread_mutex_unlock()`.
 
+```c++
+ pthread_mutex_lock(&mutex); /* acquisisci il lock mutex */
+/* sezione critica */
+pthread_mutex_unlock(&mutex); /* rilascia il lock mutex */ 
+```
+Questo codice mostra come proteggere una sezione critica con i lock mutex.
 
+## Semafori Posix
+Posix definisce due tipi di semafori: con nome (named) e senza nome (unnamed).  
+Le due tipologie sono abbastanza simili, ma differiscono nel metodo di creazione e condivisione tra processi dei semafori. 
 
+### Semafori Posix named
+La funzione `sem_open()` viene utilizzata per creare e aprire un semaforo posix con nome:
 
+```c++
+#include <semaphore.h>
+sem_t *sem;
+/* Crea il semaforo e lo inizializza a 1 */ 
+sem = sem_open(“SEM”, O_CREAT, 0666, 1);
+```
 
+In questo caso stiamo dando al semaforo il nome `SEM`.  
+Il flag `O_CREAT` indica che il semaforo, se non esiste già, verrà creato.  
+Inoltre, il semaforo fornisce accesso in lettura e scrittura agli altri processi (tramite il parametro 0666) ed è inizializzato a 1.  
+Il vantaggio dei semafori con nome è che più processi non correlati possono facilmente utilizzare un semaforo comune come meccanismo di sincronizzazione, facendo semplicemente riferimento al nome del semaforo.  
+  
+Il seguente esempio di codice illustra la protezione di una sezione critica utilizzando il semaforo creato in precedenza:
+```c++
+/* acquisisce il semaforo */ 
+sem_wait(sem); // ~ wait()
+/* sezione critica */
+/* rilascia il semaforo */ 
+sem_post(sem); // ~ signal()
+```
 
+### Semafori Posix unnamed
+Un semaforo senza nome viene creato e inizializzato mediante la funzione `sem_init()`, a cui vengono passati tre parametri:
+1. un puntatore al semaforo;
+2. un flag che indica il livello di condivisione; 
+3. il valore iniziale del semaforo.
+L’uso di `sem_init()` è illustrato nel seguente codice:
 
+```c++
+#include <semaphore.h>
+sem_t *sem;
+/* Crea il semaforo e inizializzalo a 1 */ 
+sem_init(sem, 0, 1);
+```
 
+In questo esempio il flag 0 indica che il semaforo può essere condiviso solo dai thread che appartengono al processo che lo ha creato. Il semaforo è inizializzato al valore 1.  
+
+I semafori unnamed posix usano le stesse operazioni di quelli con nome, `sem_wait()` e `sem_post()`.  
+
+```c++
+/* acquisisci il semaforo */ 
+sem_wait(sem);
+/* sezione critica */
+/* rilascia il semaforo */ 
+sem_post(sem);
+```
+Il codice mostra come proteggere una sezione critica utilizzando il semaforo unnamed.
+
+## Variabili condizionali POSIX
+Le variabili condizionali in Pthreads usano il tipo di dato `pthread_cond_t` e vengono inizializzate mediante la funzione `pthread_cond_init()`.  
+Il codice seguente crea e inizializza una variabile condizionale e il lock mutex a essa associato:
+
+```c++
+pthread_mutex_t mutex; 
+pthread_cond_t cond_var; 
+pthread_mutex_init(&mutex, NULL); 
+pthread_cond_init(&cond_var, NULL);
+```
+
+Per l’attesa su una variabile condizionale viene usata la funzione `pthread_cond_wait()`.  
+Il seguente codice mostra come un thread può aspettare il verificarsi della condizione `a == b` utilizzando una variabile condizionale Pthreads:
+
+```c++
+pthread_mutex_lock(&mutex);
+while (a != b)
+pthread_cond_wait (&cond_var, &mutex); 
+pthread_mutex_unlock(&mutex);
+```
+
+Il lock mutex associato alla variabile condizionale deve essere bloccato prima della chiamata `pthread_cond_wait()`, in quanto viene utilizzato per proteggere i dati nell’istruzione condizionale da una possibile race condition.  
+Una volta acquisito il lock, il thread può verificare la condizione.  
+Se la condizione non è verificata, il thread richiama `pthread_cond_wait()`, passando il lock mutex e la variabile condizionale come parametri.  
+La chiamata a `pthread_cond_wait()` rilascia il lock mutex, consentendo in tal modo a un altro thread di accedere al dato condiviso ed eventualmente aggiornare il suo valore in modo che la condizione restituisca true.  
+  
+Un thread che modifica i dati condivisi può richiamare la funzione `pthread_cond_signal()`, in modo da mandare un segnale a un thread in attesa sulla variabile condizionale, come mostrato di seguito:
+
+```c++
+pthread_mutex_lock(&mutex)
+a = b; 
+pthread_cond_signal(&cond_var); 
+pthread_mutex_unlock(&mutex);
+```
+
+È importante notare che il lock mutex non viene rilasciato dalla chiamata `pthread_cond_signal()`, ma dalla successiva chiamata `pthread_mutex_unlock()`.  
+Una volta che il lock mutex viene rilasciato, il thread che ha ricevuto il segnale diventa proprietario del lock e il controllo riprende dalla chiamata alla `pthread_cond_wait()`.
