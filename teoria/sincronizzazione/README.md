@@ -1,25 +1,25 @@
 # Esempi di Sincronizzazione (Cap. 7)
 Indice
-1.  Classici problemi di Sincronizzazione
-    - Produttore - consumatore con memoria limitata
-    - Problema dei lettori - scrittori
-    - Problema dei cinque filosofi
-        - Soluzione con uso dei semafori
-        - Soluzione con uso dei monitor
-2. Sincronizzazione all'interno del Kernel
-    - Windows
-    - Linux
-3. Sincronizzazione Posix
-    - Lock mutex Posix
-    - Semafori Posix
-        - Semafori Posix named
-        - Semafori Posix unnamed
-    - Variabili condizionali Posix
+1.  [Classici problemi di Sincronizzazione](#classici-problemi-di-sincronizzazione)
+    - [Produttore-consumatore con memoria limitata](#produttore-consumatore-con-memoria-limitata)
+    - [Problema dei lettori-scrittori](#problema-dei-lettori-scrittori)
+    - [Problema dei cinque filosofi](#problema-dei-cinque-filosofi)
+        - [Soluzione con uso dei semafori](#soluzione-con-uso-di-semafori)
+        - [Soluzione con uso dei monitor](#soluzione-con-uso-dei-monitor)
+2. [Sincronizzazione all'interno del Kernel](#sincronizzazione-allinterno-del-kernel)
+    - [Windows](#sincronizzazione-in-windows)
+    - [Linux](#sincronizzazione-dei-processi-in-linux)
+3. [Sincronizzazione Posix](#sincronizzazione-posix)
+    - [Lock mutex Posix](#lock-mutex-posix)
+    - [Semafori Posix](#semafori-posix)
+        - [Semafori Posix named](#semafori-posix-named)
+        - [Semafori Posix unnamed](#semafori-posix-unnamed)
+    - [Variabili condizionali Posix](#variabili-condizionali-posix)
     
 #  Classici problemi di Sincronizzazione
 Questi problemi sono utili per verificare quasi tutte le nuove proposte di schemi di sincronizzazione.
 
-## Produttore - consumatore con memoria limitata
+## Produttore-consumatore con memoria limitata
 Nel nostro problema produttore e consumatore condividono le seguenti strutture dati:
 
 ```c++
@@ -71,7 +71,7 @@ Il codice si può interpretare nel senso di produzione, da parte del produttore,
 da parte del consumatore, di posizioni vuote per il produttore.
 
 
-## Problema dei lettori - scrittori
+## Problema dei lettori-scrittori
 Si supponga che una base di dati sia da condividere tra numerosi processi concorrenti.  
 Alcuni processi possono richiedere solo la lettura del contenuto della base dati (lettori), mentre altri ne possono richiedere un aggiornamento, vale a dire una lettura e una scrittura (scrittori).  
 Se due lettori accedono nello stesso momento all’insieme di dati condiviso, non si ha alcun effetto negativo.  
@@ -141,12 +141,12 @@ I lock di lettura - scrittura sono utili soprattutto nelle situazioni seguenti:
 - Nelle applicazioni che prevedono più lettori che scrittori. Infatti, i lock di lettura- scrittura comportano in genere un carico di lavoro aggiuntivo rispetto ai semafori o ai lock mutex, compensato però dalla possibilità di eseguire molti lettori in concorrenza.
 
 
-## Problema dei cinque filosofi (dining philosophers)
+## Problema dei cinque filosofi
 Si considerino cinque filosofi che trascorrono la loro esistenza pensando e mangiando.  
 I filosofi condividono un tavolo rotondo circondato da cinque sedie, una per ciascun filosofo.  
-Al centro del tavolo si trova una zuppiera colma di riso, e la tavola è apparecchiata con cinque bacchette
+Al centro del tavolo si trova una zuppiera colma di riso, e la tavola è apparecchiata con cinque bacchette.
 
-** FOTO 1 **
+![Tavola rotonda](images/1.png)
 
 Quando un filosofo pensa, non interagisce con i colleghi.  
 Quando gli viene fame, tenta di prendere le bacchette più vicine: quelle che si trovano tra lui e i commensali alla sua destra e alla sua sinistra.  
@@ -281,7 +281,7 @@ Gli oggetti dispatcher possono essere nello stato signaled o nello stato nonsign
 Uno stato `signaled` indica che l’oggetto è disponibile e che un thread che tentasse di accedere all’oggetto non sarebbe bloccato.  
 Uno stato `nonsignaled` indica che l’oggetto non è disponibile e che qualsiasi thread che tentasse di accedervi sarebbe bloccato.
 
-** FOTO 2 **
+![Ciclo](images/2.png)
 
 ## Sincronizzazione dei processi in Linux
 Prima della versione 2.6, Linux adoperava un kernel senza prelazione; ciò significa che un processo in esecuzione in modalità kernel non poteva essere prelazionato – neppure nel caso in cui processi con priorità più alta fossero pronti per l’esecuzione.  
