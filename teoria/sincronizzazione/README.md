@@ -68,8 +68,9 @@ while (true) {
 
 È interessante notare la simmetria esistente tra il produttore e il consumatore.   
 Il codice si può interpretare nel senso di produzione, da parte del produttore, di posizioni piene per il consumatore; oppure di produzione, 
-da parte del consumatore, di posizioni vuote per il produttore.
-
+da parte del consumatore, di posizioni vuote per il produttore.  
+  
+[Torna all'indice](#esempi-di-sincronizzazione-cap-7)
 
 ## Problema dei lettori-scrittori
 Si supponga che una base di dati sia da condividere tra numerosi processi concorrenti.  
@@ -138,7 +139,9 @@ Per acquisire un tale lock è necessario specificarne la modalità, scrittura o 
 
 I lock di lettura - scrittura sono utili soprattutto nelle situazioni seguenti:
 - Nelle applicazioni in cui è facile identificare i processi che si limitano alla lettura di dati condivisi e quelli che si limitano alla scrittura di dati condivisi.
-- Nelle applicazioni che prevedono più lettori che scrittori. Infatti, i lock di lettura- scrittura comportano in genere un carico di lavoro aggiuntivo rispetto ai semafori o ai lock mutex, compensato però dalla possibilità di eseguire molti lettori in concorrenza.
+- Nelle applicazioni che prevedono più lettori che scrittori. Infatti, i lock di lettura- scrittura comportano in genere un carico di lavoro aggiuntivo rispetto ai semafori o ai lock mutex, compensato però dalla possibilità di eseguire molti lettori in concorrenza.  
+  
+[Torna all'indice](#esempi-di-sincronizzazione-cap-7)
 
 
 ## Problema dei cinque filosofi
@@ -188,7 +191,9 @@ Tali situazioni di stallo possono essere evitate con i seguenti espedienti:
 - Un filosofo può prendere le sue bacchette solo se sono entrambe disponibili (quest’operazione si deve eseguire in una sezione critica);
 - Si adotta una soluzione asimmetrica: un filosofo dispari prende prima la bacchetta di sinistra e poi quella di destra, invece un filosofo pari prende prima la bacchetta di destra e poi quella di sinistra.
 
-Si noti tuttavia che qualsiasi soluzione soddisfacente per il problema dei cinque filosofi deve escludere la possibilità di situazioni d’attesa indefinita, in altre parole che uno dei filosofi muoia di fame (da qui il termine starvation) – una soluzione immune alle situazioni di stallo non esclude necessariamente la possibilità di situazioni d’attesa indefinita.
+Si noti tuttavia che qualsiasi soluzione soddisfacente per il problema dei cinque filosofi deve escludere la possibilità di situazioni d’attesa indefinita, in altre parole che uno dei filosofi muoia di fame (da qui il termine starvation) – una soluzione immune alle situazioni di stallo non esclude necessariamente la possibilità di situazioni d’attesa indefinita.  
+  
+[Torna all'indice](#esempi-di-sincronizzazione-cap-7)
 
 ### Soluzione con uso dei monitor
 La soluzione impone il vincolo che un filosofo possa prendere le sue bacchette solo quando siano entrambe disponibili.  
@@ -260,7 +265,9 @@ DiningPhilosophers.putdown(i);
 
 È facile dimostrare che questa soluzione assicura che due vicini non mangino contemporaneamente e che non si verifichino situazioni di stallo.  
 Occorre però notare che un filosofo può attendere indefinitamente.  
-La soluzione di questo problema è lasciata come esercizio per il lettore.
+La soluzione di questo problema è lasciata come esercizio per il lettore.  
+  
+[Torna all'indice](#esempi-di-sincronizzazione-cap-7)
 
 
 # Sincronizzazione all'interno del Kernel
@@ -281,7 +288,9 @@ Gli oggetti dispatcher possono essere nello stato signaled o nello stato nonsign
 Uno stato `signaled` indica che l’oggetto è disponibile e che un thread che tentasse di accedere all’oggetto non sarebbe bloccato.  
 Uno stato `nonsignaled` indica che l’oggetto non è disponibile e che qualsiasi thread che tentasse di accedervi sarebbe bloccato.
 
-![Ciclo](images/2.png)
+![Ciclo](images/2.png)  
+  
+[Torna all'indice](#esempi-di-sincronizzazione-cap-7)
 
 ## Sincronizzazione dei processi in Linux
 Prima della versione 2.6, Linux adoperava un kernel senza prelazione; ciò significa che un processo in esecuzione in modalità kernel non poteva essere prelazionato – neppure nel caso in cui processi con priorità più alta fossero pronti per l’esecuzione.  
@@ -310,7 +319,9 @@ Gli interi atomici sono particolarmente efficienti in situazioni in cui deve ess
 Il loro utilizzo è tuttavia limitato a questi tipi di scenario. In situazioni in cui vi sono diverse variabili che contribuiscono a una possibile race condition, devono essere utilizzati strumenti di lock più sofisticati.  
 
 In Linux sono disponibili i lock mutex, utili per proteggere le sezioni critiche all’interno del kernel. In caso di loro utilizzo, un task deve invocare la funzione `mutex_lock()` prima di entrare in una sezione critica e la funzione `mutex_unlock()` dopo l’uscita dalla sezione critica.  
-Se il lock mutex non è disponibile, il task che ha invocato la `mutex_lock()` viene sospeso; verrà risvegliato quando il proprietario del lock invoca `mutex_unlock()`.
+Se il lock mutex non è disponibile, il task che ha invocato la `mutex_lock()` viene sospeso; verrà risvegliato quando il proprietario del lock invoca `mutex_unlock()`.  
+  
+[Torna all'indice](#esempi-di-sincronizzazione-cap-7)
 
 
 # Sincronizzazione Posix
@@ -341,7 +352,9 @@ Se il lock mutex non è disponibile quando viene invocata la `pthread_mutex_lock
 /* sezione critica */
 pthread_mutex_unlock(&mutex); /* rilascia il lock mutex */ 
 ```
-Questo codice mostra come proteggere una sezione critica con i lock mutex.
+Questo codice mostra come proteggere una sezione critica con i lock mutex.  
+  
+[Torna all'indice](#esempi-di-sincronizzazione-cap-7)
 
 ## Semafori Posix
 Posix definisce due tipi di semafori: con nome (named) e senza nome (unnamed).  
@@ -369,7 +382,9 @@ sem_wait(sem); // ~ wait()
 /* sezione critica */
 /* rilascia il semaforo */ 
 sem_post(sem); // ~ signal()
-```
+```  
+  
+[Torna all'indice](#esempi-di-sincronizzazione-cap-7)
 
 ### Semafori Posix unnamed
 Un semaforo senza nome viene creato e inizializzato mediante la funzione `sem_init()`, a cui vengono passati tre parametri:
@@ -396,7 +411,9 @@ sem_wait(sem);
 /* rilascia il semaforo */ 
 sem_post(sem);
 ```
-Il codice mostra come proteggere una sezione critica utilizzando il semaforo unnamed.
+Il codice mostra come proteggere una sezione critica utilizzando il semaforo unnamed.  
+  
+[Torna all'indice](#esempi-di-sincronizzazione-cap-7)
 
 ## Variabili condizionali POSIX
 Le variabili condizionali in Pthreads usano il tipo di dato `pthread_cond_t` e vengono inizializzate mediante la funzione `pthread_cond_init()`.  
@@ -434,4 +451,6 @@ pthread_mutex_unlock(&mutex);
 ```
 
 È importante notare che il lock mutex non viene rilasciato dalla chiamata `pthread_cond_signal()`, ma dalla successiva chiamata `pthread_mutex_unlock()`.  
-Una volta che il lock mutex viene rilasciato, il thread che ha ricevuto il segnale diventa proprietario del lock e il controllo riprende dalla chiamata alla `pthread_cond_wait()`.
+Una volta che il lock mutex viene rilasciato, il thread che ha ricevuto il segnale diventa proprietario del lock e il controllo riprende dalla chiamata alla `pthread_cond_wait()`.  
+  
+[Torna all'indice](#esempi-di-sincronizzazione-cap-7)
