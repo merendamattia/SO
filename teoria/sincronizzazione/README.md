@@ -157,7 +157,9 @@ Un filosofo può prendere una bacchetta alla volta e non può prendere una bacch
 Quando un filosofo affamato tiene in mano due bacchette contemporaneamente, mangia senza lasciare le bacchette.  
 Terminato il pasto, le posa e riprende a pensare.
 
-Il problema dei cinque filosofi è considerato un classico problema di sincronizzazione, non certo per la sua importanza pratica, e neanche per antipatia verso i filosofi da parte degli informatici, ma perché rappresenta una vasta classe di problemi di controllo della concorrenza, in particolare i problemi caratterizzati dalla necessità di assegnare varie risorse a diversi processi evitando situazioni di stallo e d’attesa indefinita.
+Il problema dei cinque filosofi è considerato un classico problema di sincronizzazione, non certo per la sua importanza pratica, e neanche per antipatia verso i filosofi da parte degli informatici, ma perché rappresenta una vasta classe di problemi di controllo della concorrenza, in particolare i problemi caratterizzati dalla necessità di assegnare varie risorse a diversi processi evitando situazioni di stallo e d’attesa indefinita.  
+  
+[Torna all'indice](#esempi-di-sincronizzazione-cap-7)
 
 ### Soluzione con uso di semafori
 Una semplice soluzione consiste nel rappresentare ogni bacchetta con un semaforo: un filosofo tenta di afferrare ciascuna bacchetta eseguendo un’operazione `wait()` su quel semaforo e la posa eseguendo operazioni `signal()` sui semafori appropriati.  
