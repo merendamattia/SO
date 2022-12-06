@@ -1,7 +1,7 @@
 # Deadlock (Cap. 8)
 Indice
 1.  [Algoritmo del banchiere](#algoritmo-del-banchiere)
-	- [Perchè questo nome?](#perchè-questo-nome?)
+	- [Perchè questo nome?](#perchè-questo-nome)
 	- [Realizzazione](#realizzazione)
 	- [Algoritmo di verifica della sicurezza](#algoritmo-di-verifica-della-sicurezza)
 	- [Algoritmo di richiesta delle risorse](#algoritmo-di-richiesta-delle-risorse)
