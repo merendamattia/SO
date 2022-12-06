@@ -36,15 +36,15 @@ Col trascorrere del tempo, queste strutture dati variano sia nelle dimensioni si
 L’algoritmo utilizzato per scoprire se il sistema è o non è in uno stato sicuro si può descrivere come segue.
 
 1. Siano `Work` e `Finish` vettori di lunghezza `m` ed `n` rispettivamente; si inizializzi: 
-	a) `Work = Disponibili`
-	b) `Finish[i] = false` per i = 0, 1, ..., n.
+	- `Work = Disponibili`
+	- `Finish[i] = false` per i = 0, 1, ..., n.
 2. Si cerchi `i` tale che valgano contemporaneamente:
-	a) `Finish[i] = false`
-	b) `Need(i) <= Work`
+	- `Finish[i] = false`
+	- `Need(i) <= Work`
 	Se tale i non esiste, si esegua il passo 4.
 3. Si assegni `Work = Work + Assegnate_i`
-	a) `Finish[i]= true`
-	Si torni al passo 2.
+	- `Finish[i]= true`
+	- Si torni al passo 2.
 4. Se `Finish[i]=true` per ogni `i` il sistema è in stato sicuro, altrimenti lo stato è non sicuro.
 
 ### Algoritmo di richiesta delle risorse
@@ -72,4 +72,7 @@ Tuttavia, se il nuovo stato è non sicuro, `Ti` deve attendere `Richieste_i` e s
 
 
 
-
+| First Header  | Second Header | Second Header | Content Cell  |
+| ------------- | ------------- | ------------- | Content Cell  |
+| Content Cell  | Content Cell  | Content Cell  | Content Cell  |
+| Content Cell  | Content Cell  | Content Cell  | Content Cell  |
