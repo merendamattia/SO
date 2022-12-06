@@ -22,7 +22,7 @@ Se si rispetta tale condizione, si assegnano le risorse, altrimenti il thread de
 ### Realizzazione
 La realizzazione richiede la gestione di alcune strutture dati che codificano lo stato di assegnazione delle risorse del sistema.  
 
-Sia n il numero di thread del sistema e m il numero dei tipi di risorsa. Sono necessarie le seguenti strutture dati.
+Sia `n` il numero di thread del sistema e `m` il numero dei tipi di risorsa. Sono necessarie le seguenti strutture dati.
 
 - Disponibili: un vettore di lunghezza m che indica il numero delle istanze disponibili per ciascun tipo di risorsa;  
 `disponibili[j] = k` significa che sono disponibili `k` istanze del tipo di risorsa `Rj`.
