@@ -107,7 +107,3 @@ Inoltre, una richiesta di `(0, 2, 0)` da parte di `T0` non si può soddisfare, a
   
   
 [Torna all'indice](#deadlock-cap-8)  
-
-
-
-
