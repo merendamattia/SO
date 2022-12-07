@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
+#include "utility.c"
 
 #define MAX_LIMIT 1000
 pthread_mutex_t mutex;
@@ -10,29 +11,6 @@ int sum = 0;
 double total_time_taken = 0;
 int global_quoziente = 0;
 
-int sumInMain(int vet[], int dim_array){
-	int sum_in_main = 0;
-	for(int i = 0; i < dim_array; i++)
-		sum_in_main += vet[i];
-	return sum_in_main;
-}
-
-void populateArrayRandom(int vet[], int dim_array){
-	srand(time(NULL));
-	for(int i = 0; i < dim_array; i++)
-		vet[i] = rand() % MAX_LIMIT + 1;
-}
-
-void outputArray(int vet[], int dim_array){
-	for(int i = 0; i < dim_array; i++)
-		if(vet[i] != 0)
-			printf("%d) %d\n", i + 1, vet[i]);
-}
-
-double getTimeTaken(clock_t t){
-	t = clock() - t;
-  	return ( (double)t ) / CLOCKS_PER_SEC;
-}
 
 int isWorking(void) {
     /* thread operation might fail, so here's a silly example */
@@ -57,10 +35,10 @@ void *myThread(int arg[]) {
 
 		float time_taken = getTimeTaken(t);
 
-		printf("\ntid_%d exec time %f sec, internal_sum:%d \n", pthread_self(), time_taken, internal_sum);
+		printf("\ntid_%d exec time %f sec, internal_sum:%d, arrayLength:%d \n", pthread_self(), time_taken, internal_sum, arrayLength(arg, global_quoziente));
 		//printf("indirizzo array:%d\n", &arg);
 		fflush(stdout);
-		
+
 		total_time_taken += time_taken;
 
 		//printf("---\tRilascio zona critica tid: %d\n", pthread_self());
@@ -120,12 +98,18 @@ int main() {
 	* 5 array hanno 4 elementi
 	* 1 array ha 1 elemento
 	*/
-	int quoziente = dim_array / (dim_thread - 1);
+	int modulo = dim_array % dim_thread;
+	int quoziente;
+	
+	if(modulo == 0)
+		quoziente = dim_array / dim_thread;
+	else 
+		quoziente = dim_array / (dim_thread - 1);
+
 	printf("\nQuoziente: %d\n", dim_array / dim_thread);
 
 	global_quoziente = quoziente;
 
-	int modulo = dim_array % dim_thread;
 	printf("Modulo (resto): %d\n\n", modulo);
 
 	// ---------------- Creazione thread ed esecuzione
@@ -149,18 +133,18 @@ int main() {
 	}
 	
 	// ---------------- Join dei thread
+	
 	for(int i = 0; i < dim_thread; i++) {
 		pthread_join(threads[i], &status);
 
 		if(status == 0) printf("Error thread%d", i);
 	}
 
-
 	printf("\nThreads exec time %f sec \n", total_time_taken);
 	printf("Threads exec (with creation) time %f sec \n", getTimeTaken(total_time_taken_included_creation));
 
 	pthread_mutex_lock(&mutex);
-	printf("\nSum thread: %d\n", sum);
+	printf("\nSum in thread: %d\n", sum);
 	pthread_mutex_unlock(&mutex);
 
 	clock_t total_time_taken_in_main = clock();
@@ -174,3 +158,13 @@ int main() {
 	// new_array = NULL;
   	return 0;
 }
+
+
+/*
+TODO
+creare un array di struct, con campi:
+thread id, 
+puntatore ad array (vet), 
+int che tiene conto del numero di thread cosi da poter lavorare su un unico array condiviso invece di creare n sotto-array, 
+ed eventualmente altri campi che possono servire 
+
