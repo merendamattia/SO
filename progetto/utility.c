@@ -12,6 +12,12 @@ void outputArray(int vet[], int dim_array){
 			printf("%d) %d\n", i + 1, vet[i]);
 }
 
+void outputArrayWithIndex(int vet[], int start, int finish){
+	for(int i = start; i < finish; i++)
+		if(vet[i] != 0)
+			printf("%d) %d\n", i + 1, vet[i]);
+}
+
 double getTimeTaken(clock_t t){
 	t = clock() - t;
   	return ( (double)t ) / CLOCKS_PER_SEC;
