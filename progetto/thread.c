@@ -4,32 +4,27 @@
 #include <unistd.h>
 #include <time.h>
 #include "utility.c"
-
-#define MAX_LIMIT 1000
+ 
+// Variabili globali
 pthread_mutex_t mutex;
 int sum = 0;
-double total_time_taken = 0;
-int global_quoziente = 0;
 
 struct arg_struct {
   int *vet;
   int tid;
   int start;
   int finish;
-};
-
+}; 
 
 int isWorking(void) {
-    // Funzione basilare
-    // Verifico se il thread è effettivamente in funzione
+  // Funzione basilare
+  // Verifico se il thread è effettivamente in funzione
 	void *tmp = malloc(5);
 	free(tmp);
 	return tmp ? 1 : 0;
 }
 
-//void *myThread(int arg[]) {
-void *myThread(void *arguments) {
-	clock_t t = clock();
+void *myThread(struct arg_struct* arguments) {
 
 	struct arg_struct *args = arguments;
 	
@@ -44,20 +39,16 @@ void *myThread(void *arguments) {
 		
 		sum += internal_sum;
 
-		float time_taken = getTimeTaken(t);
-
-		printf("\ntid_%d", pthread_self());
-		printf("\n\texec time %f sec", time_taken);
-		printf("\n\tinternal_sum: %d", internal_sum);
-		printf("\n\tsub-array_length: %d", args->finish - args->start);
-		printf("\n");
-		//printf("indirizzo array:%d\n", &arg);
-		fflush(stdout);
-
-		total_time_taken += time_taken;
-
 		//printf("---\tRilascio zona critica tid: %d\n", pthread_self());
 		pthread_mutex_unlock(&mutex); // esce dalla zona critica
+
+		// printf("\ntid_%d", pthread_self());
+		// //printf("\n\texec time %f sec", time_taken);
+		// printf("\n\tinternal_sum: %d", internal_sum);
+		// printf("\n\tsub-array_length: %d", args->finish - args->start);
+		// printf("\n\tsub-array_index: from %d to %d", args->start, args->finish);
+		// printf("\n");
+		// fflush(stdout);
 
 		// printf("tid%d contenuto array\n", pthread_self());
 		// outputArrayWithIndex(args->vet, args->start, args->finish);
@@ -71,46 +62,30 @@ void *myThread(void *arguments) {
 
 int main() {
 	int dim_array, dim_thread;
-	pthread_mutex_init (&mutex, NULL); // il mutex è iniziamente libero
+	pthread_mutex_init (&mutex, NULL); // Il mutex è iniziamente libero
 	
-	// ---------------- Input dimensione array
-	do {
-		printf("Inserire la dimensione dell'array: ");
-		scanf("%d", &dim_array);  
-	} while(dim_array < 1);
+	dim_array = getDimArray(); // Input dimensione array
 
-	/* Alloca spazio per un array con dim_array elementi di tipo int. */
-	int *vet = (int *) malloc(dim_array * sizeof (int));
-	if (!vet) {
-		printf("La memoria non puo' essere allocata :(\n");
+	int *vet = (int *) malloc(dim_array * sizeof (int)); // Alloca spazio per l'array
+	struct arg_struct *args = malloc(dim_array * sizeof (struct arg_struct)); // Alloca spazio per la struct
+
+	if (!vet || !args) { 
+		printf("Errore nell'allocazione della memoria :(\n");
 		return -1;
+		// Termino il programma se non posso allocare memoria
 	}
 
-	struct arg_struct *args = malloc(dim_array * sizeof (struct arg_struct));
-	if (!args) {
-		printf("La memoria non puo' essere allocata :(\n");
-		return -1;
-	}
+	populateArrayRandom(vet, dim_array); // Popolamento array con valori casuali che vanno da - MAX_LIMIT/2 A + MAX_LIMIT/2
+	//outputArray(vet, dim_array);
 
-	// ---------------- Popolamento array con valori casuali che vanno da 1 a MAX_LIMIT + 1
-	populateArrayRandom(vet, dim_array); 
-	// printf("Output array:\n");
-	// outputArray(vet, dim_array);
+	dim_thread = getNumThreads(); // Input numero thread
 
-	// ---------------- Input numero thread
-	do {
-		printf("Inserire il numero di thread (almeno 5 e massimo 10): ");
-		scanf("%d", &dim_thread);  
-	} while(dim_thread < 5 || dim_thread > 10);
+	clock_t total_time_taken_included_creation = clock(); // Start cronometro
+ 
+	pthread_t threads[dim_thread]; // Creazione array di thread
+	void *status = 0; // Variabile di stato dei threads
 
-	// ---------------- Start cronometro
-	clock_t total_time_taken_included_creation = clock();
-
-	// ---------------- Creazione array di thread
-	pthread_t threads[dim_thread]; 
-	void *status = 0; 
-
-	/* Usando questa formula avremo l'ultimo thread con meno numeri
+	/* Usando questa formula avremo l'ultimo thread con meno numeri (se modulo = 0)
 	* Dim array: 21
 	* Num thread: 6
 	* Crea 6 array 
@@ -119,55 +94,62 @@ int main() {
 	*/
 	int modulo = dim_array % dim_thread;
 	int quoziente;
+
+	// printf("\nQuoziente: %d", dim_array / dim_thread);
 	
 	if(modulo == 0)
 		quoziente = dim_array / dim_thread;
 	else 
-		quoziente = dim_array / (dim_thread - 1);
+		quoziente = dim_array / (dim_thread - 1); // è più ottimizzato
 
-	printf("\nQuoziente: %d", dim_array / dim_thread);
-	printf("\nQuoziente scelto: %d\n", quoziente);
-	printf("Modulo (resto): %d\n", modulo);
+	// printf("\nQuoziente scelto: %d\n", quoziente);
+	// printf("Modulo (resto): %d\n", modulo);
 
-	if(modulo == 0)
-		printf("\n%d thread con %d elementi da sommare\n", dim_thread, quoziente);
-	else {
-		printf("\n%d thread con %d elementi da sommare\n", dim_thread - 1, quoziente);
-		printf("1 thread con %d elementi da sommare\n", quoziente - modulo);
-	}
+	// if(modulo == 0)
+	// 	printf("\n%d thread con %d elementi da sommare\n", dim_thread, quoziente);
+	// else {
+	// 	printf("\n%d thread con %d elementi da sommare\n", dim_thread - 1, quoziente);
+	// 	printf("1 thread con %d elementi da sommare\n", dim_array % (dim_thread - 1));
+	// }
 	
-	global_quoziente = quoziente;
-
 	// ---------------- Creazione thread ed esecuzione
 	for(int i = 0; i < dim_thread; i++){
-		args->vet = vet;
-		args->tid = (int) &threads[i];
+		
+		// Popolamento della struct che verrà passata come argomento ai vari thread
+		// Inserisco le informazioni generali
+		args[i].vet = vet;
+		args[i].tid = (int) &threads[i];
 
 		if(i == 0) {
-			args->start = 0;
-			args->finish = quoziente;
+			args[i].start = 0;
+			args[i].finish = quoziente;
 		} else if(i + 1 == dim_thread) {
-			args->start = quoziente * i;
-			args->finish = dim_array;
+			args[i].start = quoziente * i;
+			args[i].finish = dim_array;
 		} else {
-			args->start = quoziente * i;
-			args->finish = quoziente * (i + 1);
+			args[i].start = quoziente * i;
+			args[i].finish = quoziente * (i + 1);
 		}
 	
-		pthread_create(&threads[i], NULL, myThread, (void *)args);
+		pthread_create(&threads[i], NULL, myThread, &args[i]);
 
-		sleep(1); // senza questo non funziona, TODO: da sistemare
+		//sleep(1); // senza questo non funziona, TODO: da capire il perchè
 	}
+	
+	clock_t total_time_taken_thread = clock();
 	
 	// ---------------- Join dei thread
 	for(int i = 0; i < dim_thread; i++) {
 		pthread_join(threads[i], &status);
 
 		if(status == 0) 
-			printf("Error thread%d", i);
+			printf("Errore nel join con il thread%d\n", i);
 	}
 
-	printf("\nThreads exec time %f sec \n", total_time_taken);
+	double time_exec_thread = getTimeTaken(total_time_taken_thread);
+
+	// ---------------- Output finali
+	printf("\nThreads exec time %f sec \n", time_exec_thread);
 	printf("Threads exec (with creation) time %f sec \n", getTimeTaken(total_time_taken_included_creation));
 
 	pthread_mutex_lock(&mutex);
@@ -184,5 +166,5 @@ int main() {
 	free(vet);  
 	free(args);
 
-  	return 0;
+  return 0;
 }
