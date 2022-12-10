@@ -7,7 +7,7 @@
  
 // Variabili globali
 pthread_mutex_t mutex;
-int sum = 0;
+int t_sum = 0;
 
 struct arg_struct {
   int *vet;
@@ -37,7 +37,7 @@ void *myThread(struct arg_struct* arguments) {
 		pthread_mutex_lock(&mutex); // entra nella zona critica
 		//printf("+++\tAccesso zona critica tid%d\n", pthread_self());
 		
-		sum += internal_sum;
+		t_sum += internal_sum;
 
 		//printf("---\tRilascio zona critica tid: %d\n", pthread_self());
 		pthread_mutex_unlock(&mutex); // esce dalla zona critica
@@ -61,6 +61,8 @@ void *myThread(struct arg_struct* arguments) {
 }
 
 int main() {
+	printf("Merenda Saverio Mattia [MAT: 330503]\n\n");
+	
 	int dim_array, dim_thread;
 	pthread_mutex_init (&mutex, NULL); // Il mutex è iniziamente libero
 	
@@ -72,7 +74,6 @@ int main() {
 	if (!vet || !args) { 
 		printf("Errore nell'allocazione della memoria :(\n");
 		return -1;
-		// Termino il programma se non posso allocare memoria
 	}
 
 	populateArrayRandom(vet, dim_array); // Popolamento array con valori casuali che vanno da - MAX_LIMIT/2 A + MAX_LIMIT/2
@@ -80,10 +81,7 @@ int main() {
 
 	dim_thread = getNumThreads(); // Input numero thread
 
-	clock_t total_time_taken_included_creation = clock(); // Start cronometro
- 
-	pthread_t threads[dim_thread]; // Creazione array di thread
-	void *status = 0; // Variabile di stato dei threads
+	int status = 0; // Variabile di stato dei threads
 
 	/* Usando questa formula avremo l'ultimo thread con meno numeri (se modulo = 0)
 	* Dim array: 21
@@ -111,6 +109,10 @@ int main() {
 	// 	printf("\n%d thread con %d elementi da sommare\n", dim_thread - 1, quoziente);
 	// 	printf("1 thread con %d elementi da sommare\n", dim_array % (dim_thread - 1));
 	// }
+
+	clock_t start_exec_time_threads = clock(); // Start cronometro
+ 
+	pthread_t threads[dim_thread]; // Creazione array di thread
 	
 	// ---------------- Creazione thread ed esecuzione
 	for(int i = 0; i < dim_thread; i++){
@@ -118,7 +120,6 @@ int main() {
 		// Popolamento della struct che verrà passata come argomento ai vari thread
 		// Inserisco le informazioni generali
 		args[i].vet = vet;
-		args[i].tid = (int) &threads[i];
 
 		if(i == 0) {
 			args[i].start = 0;
@@ -132,36 +133,40 @@ int main() {
 		}
 	
 		pthread_create(&threads[i], NULL, myThread, &args[i]);
-
-		//sleep(1); // senza questo non funziona, TODO: da capire il perchè
 	}
 	
-	clock_t total_time_taken_thread = clock();
-	
-	// ---------------- Join dei thread
+	// ---------------- Detach dei thread
 	for(int i = 0; i < dim_thread; i++) {
-		pthread_join(threads[i], &status);
+		status = pthread_detach(threads[i]);
+		// pthread_join(threads[i], &status);
 
-		if(status == 0) 
-			printf("Errore nel join con il thread%d\n", i);
+		if(status != 0) 
+			printf("Errore nel join con il thread%d\nStatus: %d", i, status);
 	}
 
-	double time_exec_thread = getTimeTaken(total_time_taken_thread);
+	double total_exec_time_threads = getTimeTaken(start_exec_time_threads);
 
-	// ---------------- Output finali
-	printf("\nThreads exec time %f sec \n", time_exec_thread);
-	printf("Threads exec (with creation) time %f sec \n", getTimeTaken(total_time_taken_included_creation));
+	printf("\n\n***** LOADING *****\n\n");
 
-	pthread_mutex_lock(&mutex);
-	printf("\nSum in thread: \t%d\n", sum);
-	pthread_mutex_unlock(&mutex);
+	clock_t start_exec_time_main = clock();
+	int m_sum = sumInMain(vet, dim_array);
+	double time_exec_main = getTimeTaken(start_exec_time_main);
 
-	clock_t total_time_taken_in_main = clock();
-	printf("Sum in main: \t%d\n", sumInMain(vet, dim_array));
-	printf("\t-> with exec time %f sec \n", getTimeTaken(total_time_taken_in_main));
+	// ---------------- Risultati finali
+	printf("\n***** RESULTS *****\n");
+	printf("MAIN\n");
+
+	printf("SUM: \t%d\n", m_sum);
+	printf("Execution time %f sec \n", time_exec_main);
+
+	printf("\nTHREADS\n");
+	printf("SUM: \t%d\n", t_sum);
+	printf("Execution time %f sec \n", total_exec_time_threads);
+	
 
 	// Distruzione del mutex
 	pthread_mutex_destroy(&mutex); 
+
 	// Deallocazione memoria dinamica utilizzata
 	free(vet);  
 	free(args);
