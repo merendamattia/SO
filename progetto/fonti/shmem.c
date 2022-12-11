@@ -52,7 +52,7 @@ int main() {
             exit(2);
         case 0: /* Figlio: eredita ID di shared memory */
             fprintf(stderr, "Figlio: entra nel ciclo \n");
-            while (1 > 0) {
+            for (;;) {
                 sleep(1);
                 if (memoria[0] >0) {
 
