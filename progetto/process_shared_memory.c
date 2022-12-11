@@ -6,7 +6,7 @@ int total_sum = 0;
 
 // Crea una chiave per il segmento di memoria condivisa
 key_t key; 
-
+ 
 void makeSum(int vet[], int start, int finish, int shmid){
 	int internal_sum = 0;
 
