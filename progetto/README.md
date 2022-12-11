@@ -1,3 +1,11 @@
-# TO-DO
-Specifiche
-da fare tutte
+# Progetto: Processes vs Threads
+## Elenco delle funzioni (che non conoscevo) che ho utilizzato
+| Metodi  | Descrizione |
+| ------------- | ------------- |
+| `key_t ftok()`  | Viene utilizzata per creare una chiave di sincronizzazione per l'accesso a una area di memoria condivisa.  Il primo parametro passato è il percorso del file da utilizzare per generare la chiave e il secondo è un identificatore di progetto. |
+| `int sem_init()`  | Viene utilizzata per inizializzare un semaforo.  Passiamo tre parametri: il primo è un puntatore a una struttura `sem_t` che rappresenta il semaforo da inizializzare; il secondo specifica se il semaforo è condiviso tra processi o solo all'interno di un singolo processo; e infine il terzo è il valore iniziale del semaforo.  La funzione restituisce `0` in caso di successo, oppure un valore negativo in caso di errore. |
+| `void shmat()`  | Consente a un processo di accedere ai dati presenti in una area di memoria condivisa, rendendoli disponibili per la lettura e la scrittura.  Passiamo tre parametri: il primo è l'identificatore dell'area di memoria condivisa da collegare; il secondo è l'indirizzo in cui collegare l'area di memoria condivisa; e infine il terzo è una maschera di flag che determina le modalità di accesso all'area di memoria condivisa.  La funzione restituisce l'indirizzo del segmento di memoria del processo dove è stato collegato l'area di memoria condivisa |
+| `int shmdt()`  | Consente a un processo di interrompere l'accesso ai dati presenti in una area di memoria condivisa, rendendoli non più disponibili per la lettura e la scrittura.  Passiamo solo un parametro: è l'indirizzo del segmento di memoria del processo dove è collegata l'area di memoria condivisa da scollegare.  La funzione restituisce `0` in caso di successo, oppure un valore negativo in caso di errore.  |
+| `void exit()`  | Viene utilizzata per terminare un processo. Termina solo il processo corrente e non gli altri processi creati dal metodo `fork`.  Passiamo un parametro: è un codice di uscita che indica lo stato del processo al momento della terminazione. Questo codice può essere utilizzato da altri processi per determinare se il processo è stato terminato correttamente o meno. |
+| `pid_t wait()`  | Viene utilizzata per sospendere l'esecuzione di un processo fino a quando uno dei suoi figli non viene terminato.  Passiamo un parametro: è un puntatore a una variabile intera in cui viene memorizzato lo stato di uscita del processo figlio terminato. La funzione restituisce l'identificatore del processo figlio terminato, oppure `-1` in caso di errore. |
+| Content Cell  | Content Cell  |
